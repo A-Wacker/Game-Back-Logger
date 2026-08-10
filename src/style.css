@@ -1,0 +1,342 @@
+:root {
+  --bg: #1a1a2e;
+  --surface: #23233a;
+  --surface-2: #2c2c48;
+  --border: #3a3a5c;
+  --text: #e8e8f0;
+  --text-dim: #9a9ab4;
+  --accent: #8a7cff;
+  --danger: #e0566b;
+  --c-in-progress: #4ecdc4;
+  --c-up-next: #f5b942;
+  --c-backlog: #8a7cff;
+  --c-beat: #6ee27a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Keep the hidden attribute working on elements we give a display value. */
+[hidden] {
+  display: none !important;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ---------- Header ---------- */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  padding: calc(0.5rem + env(safe-area-inset-top)) 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title-row h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.search-row {
+  margin-top: 0.5rem;
+}
+
+#search {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #14142a;
+  font-weight: 600;
+}
+
+button.danger {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.icon-btn {
+  min-width: 44px;
+  padding: 0;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.menu-wrap {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  display: flex;
+  flex-direction: column;
+  min-width: 11rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+}
+
+.menu button {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  text-align: left;
+}
+
+.menu button:active {
+  background: var(--surface);
+}
+
+/* ---------- Status chips ---------- */
+.chips {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chip {
+  min-height: 36px;
+  padding: 0 0.8rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  color: var(--text-dim);
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #14142a;
+  font-weight: 600;
+}
+
+/* ---------- Sections ---------- */
+main {
+  padding: 0.5rem 0.75rem 3rem;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.status-section {
+  margin-bottom: 0.5rem;
+  content-visibility: auto;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  background: var(--surface);
+  text-align: left;
+  font-weight: 600;
+  min-height: 48px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.status-in-progress { background: var(--c-in-progress); }
+.status-dot.status-up-next { background: var(--c-up-next); }
+.status-dot.status-backlog { background: var(--c-backlog); }
+.status-dot.status-beat { background: var(--c-beat); }
+
+.section-label {
+  flex: 1;
+}
+
+.count-badge {
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.chevron {
+  color: var(--text-dim);
+}
+
+/* ---------- Game rows ---------- */
+.game-list {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.game-row {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+}
+
+.row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.15rem;
+  text-align: left;
+  padding: 0.45rem 0.75rem;
+  border-radius: 10px 0 0 10px;
+  background: color-mix(in srgb, var(--surface) 55%, var(--bg));
+}
+
+.game-title {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-meta {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.row-status {
+  width: 7.2rem;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 0 10px 10px 0;
+  background: var(--surface);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  padding: 0 0.4rem;
+}
+
+.empty-state {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  margin: 0.25rem 0;
+}
+
+/* ---------- Dialogs ---------- */
+dialog {
+  width: min(92vw, 26rem);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 1rem;
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.6);
+}
+
+dialog h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.7rem;
+}
+
+.field span {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.field input,
+.field select,
+.field textarea {
+  font: inherit;
+  min-height: 44px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field-pair {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.field-pair .field {
+  flex: 1;
+  min-width: 0;
+}
+
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dialog-actions.column {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.dialog-actions .spacer {
+  flex: 1;
+}
