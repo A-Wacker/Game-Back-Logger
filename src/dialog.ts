@@ -81,9 +81,10 @@ export function openGameDialog(
 function syncFieldVisibility(): void {
   const status = (form().elements.namedItem('status') as HTMLSelectElement).value;
   (document.getElementById('rating-field') as HTMLElement).hidden = status !== 'beat';
-  // Dates only make sense once a game has been played: hide for Backlog / Up Next.
+  // Dates only apply to games being played or beaten; Backlog, Up Next,
+  // and Abandoned games just get a title and notes.
   (document.getElementById('dates-fields') as HTMLElement).hidden =
-    status === 'backlog' || status === 'up-next';
+    status !== 'in-progress' && status !== 'beat';
 }
 
 function readForm(): GameInput {

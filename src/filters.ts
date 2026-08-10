@@ -20,6 +20,7 @@ export function groupGames(
     'up-next': [],
     backlog: [],
     beat: [],
+    abandoned: [],
   };
   for (const game of games) {
     if (filter.status !== 'all' && game.status !== filter.status) continue;
