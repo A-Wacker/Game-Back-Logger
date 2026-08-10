@@ -64,28 +64,41 @@ function onPointerMove(e: PointerEvent): void {
   updatePosition();
 }
 
+/** Where the element will sit once any in-flight transform animation ends. */
+function untransformedRect(el: HTMLElement): DOMRect {
+  const rect = el.getBoundingClientRect();
+  const transform = getComputedStyle(el).transform;
+  if (transform && transform !== 'none') {
+    const m = new DOMMatrixReadOnly(transform);
+    return new DOMRect(rect.x - m.m41, rect.y - m.m42, rect.width, rect.height);
+  }
+  return rect;
+}
+
 function updatePosition(): void {
   if (!drag) return;
   const { row, list } = drag;
   row.style.transform = `translateY(${drag.pointerY - drag.startPointerY + drag.baseOffset}px)`;
 
   // Reorder live while the dragged row's visual box crosses a sibling's
-  // midpoint. Loop so a fast fling can pass several rows in one event.
+  // midpoint. Siblings are measured at their settled (untransformed)
+  // position so a mid-slide row can't retrigger a swap and jitter.
+  // Loop so a fast fling can pass several rows in one event.
   for (let guard = 0; guard < 100; guard++) {
     const rect = row.getBoundingClientRect();
     const prev = row.previousElementSibling as HTMLElement | null;
     const next = row.nextElementSibling as HTMLElement | null;
     if (prev) {
-      const pr = prev.getBoundingClientRect();
+      const pr = untransformedRect(prev);
       if (rect.top < pr.top + pr.height / 2) {
-        moveRow(row, list, prev);
+        moveRow(row, list, prev, prev);
         continue;
       }
     }
     if (next) {
-      const nr = next.getBoundingClientRect();
+      const nr = untransformedRect(next);
       if (rect.bottom > nr.top + nr.height / 2) {
-        moveRow(row, list, next.nextSibling);
+        moveRow(row, list, next.nextSibling, next);
         continue;
       }
     }
@@ -93,14 +106,37 @@ function updatePosition(): void {
   }
 }
 
-function moveRow(row: HTMLElement, list: HTMLElement, before: Node | null): void {
+function moveRow(
+  row: HTMLElement,
+  list: HTMLElement,
+  before: Node | null,
+  displaced: HTMLElement,
+): void {
   if (!drag) return;
+  const displacedFrom = displaced.getBoundingClientRect();
   const naturalTop = row.offsetTop;
   list.insertBefore(row, before);
   // The row's natural position jumped; grow/shrink the transform so its
   // visual position under the pointer is unchanged.
   drag.baseOffset += naturalTop - row.offsetTop;
   row.style.transform = `translateY(${drag.pointerY - drag.startPointerY + drag.baseOffset}px)`;
+  // FLIP: the displaced sibling slides from where it visually was to its
+  // new slot instead of popping there.
+  const dy = displacedFrom.top - untransformedRect(displaced).top;
+  if (dy !== 0) {
+    displaced.style.transition = 'none';
+    displaced.style.transform = `translateY(${dy}px)`;
+    void displaced.offsetHeight; // flush so the transition below animates
+    displaced.style.transition = 'transform 160ms ease';
+    displaced.style.transform = '';
+    displaced.addEventListener(
+      'transitionend',
+      () => {
+        displaced.style.transition = '';
+      },
+      { once: true },
+    );
+  }
 }
 
 function autoScrollTick(): void {
