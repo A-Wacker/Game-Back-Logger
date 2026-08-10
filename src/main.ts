@@ -4,6 +4,7 @@ import { STATUS_LABELS, STATUS_ORDER, isGameStatus, type GameStatus } from './ty
 import * as store from './store';
 import { groupGames, isFiltering, type FilterState } from './filters';
 import { renderSections } from './render';
+import { initDrag } from './drag';
 import { initDialog, openGameDialog } from './dialog';
 import { downloadBackup, parseBackupFile } from './backup';
 
@@ -11,6 +12,13 @@ registerSW({ immediate: true });
 if (navigator.storage?.persist) void navigator.storage.persist();
 
 const UI_PREFS_KEY = 'game-back-logger:ui';
+const ORDER_FLAG_KEY = 'game-back-logger:manual-order';
+
+// One-time switch from computed sorting to manual (drag) ordering.
+if (!localStorage.getItem(ORDER_FLAG_KEY)) {
+  store.migrateToManualOrder();
+  localStorage.setItem(ORDER_FLAG_KEY, '1');
+}
 
 const filter: FilterState = { query: '', status: 'all' };
 const collapsed = loadCollapsed();
@@ -48,6 +56,9 @@ function rerender(): void {
   renderSections(sectionsEl, groupGames(store.getGames(), filter), {
     collapsed,
     filtering: isFiltering(filter),
+    // A search hides rows, so an in-list drop index would be ambiguous;
+    // a status-chip filter still shows whole sections, so it can reorder.
+    reorderable: filter.query.trim() === '',
   });
 }
 
@@ -192,5 +203,6 @@ importFile.addEventListener('change', async () => {
 
 // --- Boot ---
 store.onChange(rerender);
+initDrag(sectionsEl, (id, newIndex) => store.reorderGame(id, newIndex));
 buildChips();
 rerender();

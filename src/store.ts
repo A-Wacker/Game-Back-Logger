@@ -1,4 +1,4 @@
-import { isGameStatus, type Game, type GameStatus, type StoreDocument } from './types';
+import { STATUS_ORDER, isGameStatus, type Game, type GameStatus, type StoreDocument } from './types';
 
 const STORAGE_KEY = 'game-back-logger:v1';
 
@@ -48,20 +48,66 @@ export function getDocument(): StoreDocument {
 
 export type GameInput = Pick<Game, 'title' | 'status' | 'rating' | 'startedDate' | 'finishedDate' | 'notes'>;
 
+/** Insert a game at the top of its status group (array order IS display order). */
+function insertAtGroupTop(game: Game): void {
+  const firstIdx = doc.games.findIndex((g) => g.status === game.status);
+  if (firstIdx === -1) doc.games.push(game);
+  else doc.games.splice(firstIdx, 0, game);
+}
+
 export function addGame(input: GameInput): Game {
   const now = new Date().toISOString();
   const game: Game = { id: crypto.randomUUID(), ...input, createdAt: now, updatedAt: now };
-  doc.games.push(game);
+  insertAtGroupTop(game);
   save();
   return game;
 }
 
 export function updateGame(id: string, patch: Partial<GameInput>): Game | undefined {
-  const game = doc.games.find((g) => g.id === id);
-  if (!game) return undefined;
+  const idx = doc.games.findIndex((g) => g.id === id);
+  if (idx === -1) return undefined;
+  const game = doc.games[idx];
+  const statusChanged = patch.status !== undefined && patch.status !== game.status;
   Object.assign(game, patch, { updatedAt: new Date().toISOString() });
+  if (statusChanged) {
+    doc.games.splice(idx, 1);
+    insertAtGroupTop(game);
+  }
   save();
   return game;
+}
+
+/** Move a game to a new position (index within its own status group). */
+export function reorderGame(id: string, newIndex: number): void {
+  const game = doc.games.find((g) => g.id === id);
+  if (!game) return;
+  doc.games.splice(doc.games.indexOf(game), 1);
+  const group = doc.games.filter((g) => g.status === game.status);
+  if (newIndex >= group.length) {
+    const last = group[group.length - 1];
+    doc.games.splice(last ? doc.games.indexOf(last) + 1 : doc.games.length, 0, game);
+  } else {
+    doc.games.splice(doc.games.indexOf(group[newIndex]), 0, game);
+  }
+  save();
+}
+
+/**
+ * One-time switch from computed sorting to manual ordering: seed the array
+ * order from the sort the app used to display, so nothing visibly moves.
+ */
+export function migrateToManualOrder(): void {
+  const byUpdated = (a: Game, b: Game) => b.updatedAt.localeCompare(a.updatedAt);
+  const byFinished = (a: Game, b: Game) => {
+    if (a.finishedDate && b.finishedDate) return b.finishedDate.localeCompare(a.finishedDate);
+    if (a.finishedDate) return -1;
+    if (b.finishedDate) return 1;
+    return byUpdated(a, b);
+  };
+  doc.games = STATUS_ORDER.flatMap((status) =>
+    doc.games.filter((g) => g.status === status).sort(status === 'beat' ? byFinished : byUpdated),
+  );
+  save();
 }
 
 export function deleteGame(id: string): void {

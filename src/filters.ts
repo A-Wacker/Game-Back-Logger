@@ -1,4 +1,4 @@
-import { STATUS_ORDER, type Game, type GameStatus } from './types';
+import type { Game, GameStatus } from './types';
 
 export interface FilterState {
   query: string;
@@ -9,7 +9,10 @@ export function isFiltering(filter: FilterState): boolean {
   return filter.query.trim() !== '' || filter.status !== 'all';
 }
 
-/** Filter, group by status, and sort each group. Pure — no DOM, no store. */
+/**
+ * Filter and group by status. Pure — no DOM, no store. Array order is the
+ * user's manual order, so groups preserve it rather than sorting.
+ */
 export function groupGames(
   games: readonly Game[],
   filter: FilterState,
@@ -27,20 +30,5 @@ export function groupGames(
     if (query && !game.title.toLowerCase().includes(query)) continue;
     grouped[game.status].push(game);
   }
-  for (const status of STATUS_ORDER) {
-    grouped[status].sort(status === 'beat' ? compareBeat : compareByUpdated);
-  }
   return grouped;
-}
-
-function compareByUpdated(a: Game, b: Game): number {
-  return b.updatedAt.localeCompare(a.updatedAt);
-}
-
-/** Beat: most recently finished first, undated last. */
-function compareBeat(a: Game, b: Game): number {
-  if (a.finishedDate && b.finishedDate) return b.finishedDate.localeCompare(a.finishedDate);
-  if (a.finishedDate) return -1;
-  if (b.finishedDate) return 1;
-  return compareByUpdated(a, b);
 }
