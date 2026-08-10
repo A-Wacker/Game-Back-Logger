@@ -13,7 +13,7 @@ It's a PWA: open the link in Chrome on Android and choose **Install app** (or "A
 - Quick status dropdown on every row; tap a row to edit details
 - Per-game rating (for beaten games), started/finished dates, and notes
 - Works 100% offline — data lives on your device (localStorage)
-- JSON backup: **⋮ menu → Export backup** downloads your list; **Import backup** restores it (merge or replace)
+- JSON backup: **⋮ menu → Export…** downloads your list; **Import…** restores it (merge or replace)
 
 > Your data is stored in the browser on the device you use. It does not sync between devices — use Export/Import to move it.
 

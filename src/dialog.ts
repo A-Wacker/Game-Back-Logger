@@ -21,7 +21,7 @@ export function initDialog(cb: DialogCallbacks): void {
     option.textContent = STATUS_LABELS[status];
     statusSelect.append(option);
   }
-  statusSelect.addEventListener('change', syncRatingVisibility);
+  statusSelect.addEventListener('change', syncFieldVisibility);
 
   form().addEventListener('submit', (event) => {
     event.preventDefault();
@@ -69,7 +69,7 @@ export function openGameDialog(
   (elements.namedItem('finishedDate') as HTMLInputElement).value = game?.finishedDate ?? '';
   (elements.namedItem('notes') as HTMLTextAreaElement).value = game?.notes ?? '';
 
-  syncRatingVisibility();
+  syncFieldVisibility();
   dialog().showModal();
   if (opts.focusRating) {
     (elements.namedItem('rating') as HTMLSelectElement).focus();
@@ -78,9 +78,12 @@ export function openGameDialog(
   }
 }
 
-function syncRatingVisibility(): void {
+function syncFieldVisibility(): void {
   const status = (form().elements.namedItem('status') as HTMLSelectElement).value;
   (document.getElementById('rating-field') as HTMLElement).hidden = status !== 'beat';
+  // Dates only make sense once a game has been played: hide for Backlog / Up Next.
+  (document.getElementById('dates-fields') as HTMLElement).hidden =
+    status === 'backlog' || status === 'up-next';
 }
 
 function readForm(): GameInput {
