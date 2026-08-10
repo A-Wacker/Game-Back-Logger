@@ -25,6 +25,7 @@ function loadCollapsed(): Record<GameStatus, boolean> {
     'up-next': false,
     backlog: true,
     beat: true,
+    abandoned: true,
   };
   try {
     const raw = localStorage.getItem(UI_PREFS_KEY);

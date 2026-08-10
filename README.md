@@ -1,6 +1,6 @@
 # Game Back-Logger
 
-A video game backlog tracker you install on your phone. All four status lists — **In-Progress, Up Next, Backlog, Beat** — on a single page, with search and status filters.
+A video game backlog tracker you install on your phone. All five status lists — **In-Progress, Up Next, Backlog, Beat, Abandoned** — on a single page, with search and status filters.
 
 **Live app:** https://a-wacker.github.io/Game-Back-Logger/
 
@@ -8,10 +8,10 @@ It's a PWA: open the link in Chrome on Android and choose **Install app** (or "A
 
 ## Features
 
-- Games grouped into collapsible sections (In-Progress → Up Next → Backlog → Beat) with counts
+- Games grouped into collapsible sections (In-Progress → Up Next → Backlog → Beat → Abandoned) with counts
 - Live title search and status filter chips
 - Quick status dropdown on every row; tap a row to edit details
-- Per-game rating (for beaten games), started/finished dates, and notes
+- Per-game rating (for beaten games), started/finished dates (In-Progress and Beat), and notes
 - Works 100% offline — data lives on your device (localStorage)
 - JSON backup: **⋮ menu → Export…** downloads your list; **Import…** restores it (merge or replace)
 

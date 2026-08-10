@@ -11,6 +11,7 @@
   --c-up-next: #f5b942;
   --c-backlog: #8a7cff;
   --c-beat: #6ee27a;
+  --c-abandoned: #7b7b93;
 }
 
 * {
@@ -191,6 +192,7 @@ main {
 .status-dot.status-up-next { background: var(--c-up-next); }
 .status-dot.status-backlog { background: var(--c-backlog); }
 .status-dot.status-beat { background: var(--c-beat); }
+.status-dot.status-abandoned { background: var(--c-abandoned); }
 
 .section-label {
   flex: 1;

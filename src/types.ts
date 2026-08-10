@@ -1,12 +1,19 @@
-export type GameStatus = 'in-progress' | 'up-next' | 'backlog' | 'beat';
+export type GameStatus = 'in-progress' | 'up-next' | 'backlog' | 'beat' | 'abandoned';
 
-export const STATUS_ORDER: readonly GameStatus[] = ['in-progress', 'up-next', 'backlog', 'beat'];
+export const STATUS_ORDER: readonly GameStatus[] = [
+  'in-progress',
+  'up-next',
+  'backlog',
+  'beat',
+  'abandoned',
+];
 
 export const STATUS_LABELS: Record<GameStatus, string> = {
   'in-progress': 'In-Progress',
   'up-next': 'Up Next',
   backlog: 'Backlog',
   beat: 'Beat',
+  abandoned: 'Abandoned',
 };
 
 export function isGameStatus(value: unknown): value is GameStatus {
