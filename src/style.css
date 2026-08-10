@@ -221,9 +221,44 @@ main {
 }
 
 .game-row {
+  position: relative;
   display: flex;
   align-items: stretch;
   gap: 2px;
+}
+
+.game-row.dragging {
+  z-index: 5;
+}
+
+.game-row.dragging > * {
+  background: var(--surface-2);
+}
+
+.game-row.dragging .row-main {
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.5);
+}
+
+.drag-handle {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  width: 2.4rem;
+  flex-shrink: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px 0 0 10px;
+  background: color-mix(in srgb, var(--surface) 55%, var(--bg));
+  border: 0;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .row-main {
@@ -236,8 +271,13 @@ main {
   gap: 0.15rem;
   text-align: left;
   padding: 0.45rem 0.75rem;
-  border-radius: 10px 0 0 10px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--surface) 55%, var(--bg));
+}
+
+/* Round the left edge when there's no drag handle (e.g. while searching). */
+.row-main:first-child {
+  border-radius: 10px 0 0 10px;
 }
 
 .game-title {

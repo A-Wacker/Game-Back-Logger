@@ -5,6 +5,8 @@ export interface RenderOptions {
   collapsed: Record<GameStatus, boolean>;
   /** While filtering: expand everything, hide empty sections. */
   filtering: boolean;
+  /** Show drag handles (off while a search hides part of a section). */
+  reorderable: boolean;
 }
 
 export function renderSections(
@@ -17,7 +19,7 @@ export function renderSections(
     const games = grouped[status];
     if (opts.filtering && games.length === 0) continue;
     const expanded = opts.filtering || !opts.collapsed[status];
-    sections.push(buildSection(status, games, expanded));
+    sections.push(buildSection(status, games, expanded, opts.reorderable));
   }
   if (sections.length === 0) {
     const empty = document.createElement('p');
@@ -29,7 +31,12 @@ export function renderSections(
   container.replaceChildren(...sections);
 }
 
-function buildSection(status: GameStatus, games: Game[], expanded: boolean): HTMLElement {
+function buildSection(
+  status: GameStatus,
+  games: Game[],
+  expanded: boolean,
+  reorderable: boolean,
+): HTMLElement {
   const section = document.createElement('section');
   section.className = 'status-section';
   section.dataset.status = status;
@@ -64,16 +71,26 @@ function buildSection(status: GameStatus, games: Game[], expanded: boolean): HTM
     } else {
       const list = document.createElement('ul');
       list.className = 'game-list';
-      for (const game of games) list.append(buildRow(game));
+      for (const game of games) list.append(buildRow(game, reorderable));
       section.append(list);
     }
   }
   return section;
 }
 
-function buildRow(game: Game): HTMLElement {
+function buildRow(game: Game, reorderable: boolean): HTMLElement {
   const row = document.createElement('li');
   row.className = 'game-row';
+
+  if (reorderable) {
+    const handle = document.createElement('button');
+    handle.type = 'button';
+    handle.className = 'drag-handle';
+    handle.dataset.id = game.id;
+    handle.setAttribute('aria-label', `Reorder ${game.title}`);
+    handle.textContent = '☰';
+    row.append(handle);
+  }
 
   const main = document.createElement('button');
   main.type = 'button';

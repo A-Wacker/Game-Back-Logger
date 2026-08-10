@@ -73,8 +73,13 @@ export function openGameDialog(
   dialog().showModal();
   if (opts.focusRating) {
     (elements.namedItem('rating') as HTMLSelectElement).focus();
-  } else {
+  } else if (!game) {
+    // New game: jump straight into typing the title.
     (elements.namedItem('title') as HTMLInputElement).focus();
+  } else {
+    // Existing game: open as a viewer — focusing a field here would pop
+    // the on-screen keyboard. The user taps whichever field to edit.
+    dialog().focus();
   }
 }
 
