@@ -123,13 +123,22 @@ function buildRow(game: Game, reorderable: boolean): HTMLElement {
   return row;
 }
 
+/**
+ * 'YYYY-MM-DD' -> 'MM-DD-YY' for the compact list rows. Sliced rather than
+ * parsed as a Date so a local timezone can't shift the day.
+ */
+function shortDate(iso: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  return m ? `${m[2]}-${m[3]}-${m[1].slice(2)}` : iso;
+}
+
 function buildMeta(game: Game): HTMLElement | null {
   const parts: string[] = [];
   if (game.status === 'beat') {
     if (game.rating) parts.push('★'.repeat(game.rating) + '☆'.repeat(5 - game.rating));
-    if (game.finishedDate) parts.push(`Finished ${game.finishedDate}`);
+    if (game.finishedDate) parts.push(`Finished ${shortDate(game.finishedDate)}`);
   } else if (game.status === 'in-progress' && game.startedDate) {
-    parts.push(`Started ${game.startedDate}`);
+    parts.push(`Started ${shortDate(game.startedDate)}`);
   }
   if (game.notes.trim()) parts.push('📝');
   if (parts.length === 0) return null;
