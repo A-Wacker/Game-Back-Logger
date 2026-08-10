@@ -53,6 +53,7 @@ function saveCollapsed(): void {
 }
 
 function rerender(): void {
+  const scrollYBefore = window.scrollY;
   renderSections(sectionsEl, groupGames(store.getGames(), filter), {
     collapsed,
     filtering: isFiltering(filter),
@@ -60,6 +61,8 @@ function rerender(): void {
     // a status-chip filter still shows whole sections, so it can reorder.
     reorderable: filter.query.trim() === '',
   });
+  // Rebuilding the list must never move the viewport (e.g. after a drop).
+  if (window.scrollY !== scrollYBefore) window.scrollTo(0, scrollYBefore);
 }
 
 // --- Status filter chips ---

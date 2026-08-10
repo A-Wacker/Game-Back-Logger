@@ -23,6 +23,11 @@
   display: none !important;
 }
 
+/* No blue tap-flash overlay on touch. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 html {
   color-scheme: dark;
 }
@@ -165,9 +170,11 @@ main {
   margin: 0 auto;
 }
 
+/* No content-visibility here: freshly rebuilt sections would have zero
+   intrinsic size for a frame, collapsing page height and clamping the
+   scroll position to the top after every re-render. */
 .status-section {
   margin-bottom: 0.5rem;
-  content-visibility: auto;
 }
 
 .section-header {
@@ -225,6 +232,9 @@ main {
   display: flex;
   align-items: stretch;
   gap: 2px;
+  /* List rows are tap targets, not prose — no long-press text selection. */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .game-row.dragging {
